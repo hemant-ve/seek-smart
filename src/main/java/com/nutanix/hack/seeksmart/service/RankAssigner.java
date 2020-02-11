@@ -1,4 +1,4 @@
-package com.nutanix.hack.seeksmart;
+package com.nutanix.hack.seeksmart.service;
 
 import com.nutanix.hack.seeksmart.model.Hot;
 import com.nutanix.hack.seeksmart.model.Trending;
