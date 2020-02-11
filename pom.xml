@@ -11,8 +11,8 @@
 	<groupId>com.nutanix.hack</groupId>
 	<artifactId>seeksmart</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>seeksmart</name>
-	<description>MVP for the SeekSmart product</description>
+	<name>concur</name>
+	<description>MVP for the concur product</description>
 
 	<properties>
 		<java.version>1.8</java.version>
