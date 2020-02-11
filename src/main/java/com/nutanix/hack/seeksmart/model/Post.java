@@ -34,7 +34,10 @@ public class Post {
 
     @Column(name = "no_of_concurs", nullable = false)
     private Integer noOfConcurs = 0;
-
+    
+    @Column(name = "sentiment_index", nullable = false)
+    private Integer sentimentIndex;
+    
     @Column(name = "created_by", nullable = false)
     private String createdBy;
 

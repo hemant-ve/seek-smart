@@ -2,14 +2,19 @@ package com.nutanix.hack.seeksmart.controller;
 
 import com.nutanix.hack.seeksmart.model.Hot;
 import com.nutanix.hack.seeksmart.model.Post;
+import com.nutanix.hack.seeksmart.model.Sentiment;
 import com.nutanix.hack.seeksmart.model.Trending;
 import com.nutanix.hack.seeksmart.pojo.request.CreatePostRequest;
 import com.nutanix.hack.seeksmart.pojo.request.PostBulkRequest;
+import com.nutanix.hack.seeksmart.pojo.request.TimeRange;
 import com.nutanix.hack.seeksmart.pojo.response.PostItem;
 import com.nutanix.hack.seeksmart.pojo.response.PostResponse;
+import com.nutanix.hack.seeksmart.pojo.response.SentimentResponse;
 import com.nutanix.hack.seeksmart.repository.HotRepository;
 import com.nutanix.hack.seeksmart.repository.PostRepository;
+import com.nutanix.hack.seeksmart.repository.SentimentRepository;
 import com.nutanix.hack.seeksmart.repository.TrendingRepository;
+import com.nutanix.hack.seeksmart.service.SentimentAnalyzer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +32,8 @@ public class controller {
     private final HotRepository hotRepository;
     private final PostRepository postRepository;
     private final TrendingRepository trendingRepository;
+    private final SentimentRepository sentimentRepository;
+    private final SentimentAnalyzer sentimentAnalyzer;
 
     @GetMapping(path = "/post")
     @ResponseStatus(HttpStatus.OK)
@@ -74,6 +81,7 @@ public class controller {
         List<String> hashTags =
         Post post = Post.builder()
                 .rant(createPostRequest.getRant())
+                .sentimentIndex(sentimentAnalyzer.findSentiment(createPostRequest.getRant()))
                 .createdBy(createPostRequest.getUserName())
                 .isDeleted(false)
                 .hashTags()
@@ -116,6 +124,15 @@ public class controller {
             post.setNoOfAcks(post.getNoOfAcks()+1);
             postRepository.save(post);
         }
+    }
+    
+    @GetMapping(path = "/sentiment")
+    @ResponseStatus(HttpStatus.OK)
+    public List<SentimentResponse> getSentimentTimeseries(@RequestParam(name = "timeRange") TimeRange timeRange) {
+        List<Sentiment> sentiments = sentimentRepository.findByTagEqualsAndTimestampBetween(0,
+                timeRange.getStartTime(), timeRange.getEndTime());
+        return sentiments.stream().map(sentiment -> new SentimentResponse(sentiment.getTimestamp(), sentiment.getIndex()))
+                .collect(Collectors.toList());
     }
 
 }
