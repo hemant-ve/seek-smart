@@ -24,5 +24,8 @@ public class Hot {
     private Long postId;
 
     @Column(name = "rank", nullable = false)
-    private Integer rank;
+    private Double rank;
+    
+    @Column(name = "cycle_count", nullable = false)
+    private Integer cycleCount;
 }
