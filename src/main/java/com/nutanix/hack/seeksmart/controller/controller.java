@@ -71,10 +71,12 @@ public class controller {
     @PostMapping(path = "/post")
     @ResponseStatus(HttpStatus.CREATED)
     public Long createPost(@Valid @RequestBody(required = true) CreatePostRequest createPostRequest) {
+        List<String> hashTags =
         Post post = Post.builder()
                 .rant(createPostRequest.getRant())
                 .createdBy(createPostRequest.getUserName())
                 .isDeleted(false)
+                .hashTags()
                 .build();
         post = postRepository.save(post);
         return post.getId();
@@ -106,7 +108,7 @@ public class controller {
         return 0L;
     }
 
-    @PutMapping(path = "/post/{id}/ack")
+    @PutMapping(path = "/post/ack")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void ackPost(@Valid @RequestBody PostBulkRequest postBulkRequest) {
         List<Post> posts = postRepository.findAllById(postBulkRequest.getPostIds());

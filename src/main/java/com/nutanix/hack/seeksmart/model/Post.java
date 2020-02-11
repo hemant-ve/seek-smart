@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "post")
@@ -44,5 +45,8 @@ public class Post {
     @LastModifiedDate
     @Column(name = "updated_at")
     private Long updatedAt;
+
+    @Column(name = "hash_tags", nullable = true)
+    private List<String> hashTags;
 
 }
