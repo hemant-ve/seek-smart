@@ -1,4 +1,4 @@
-package com.nutanix.hack.seeksmart.utils;
+package com.nutanix.hack.seeksmart.service;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
@@ -16,7 +16,7 @@ public class SentimentAnalyzer {
 
     public int findSentiment(String line) {
         Properties properties = new Properties();
-        properties.setProperty("annotators", "tokenize, ssplit, parse, sentiment");
+        properties.setProperty("annotators", "tokenize, ssplit, parse, index");
         StanfordCoreNLP stanfordCoreNLP = new StanfordCoreNLP(properties);
         int sentimentIndex = 0;
         if (line != null && !line.isEmpty()) {
