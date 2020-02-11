@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface HotRepository extends JpaRepository<Hot, Long> {
 
-    List<Hot> findTop50ByRankAfterAndRankBeforeOrderByRank(Integer keySet, int minValue);
+    List<Hot> findTop50ByRankAfterAndRankBeforeOrderByRankAsc(Integer keySet, int minValue);
 }

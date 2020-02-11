@@ -50,6 +50,7 @@ public class Post {
     private Long updatedAt;
 
     @Column(name = "hash_tags", nullable = true)
+    @ElementCollection(targetClass = String.class)
     private List<String> hashTags;
 
 }
