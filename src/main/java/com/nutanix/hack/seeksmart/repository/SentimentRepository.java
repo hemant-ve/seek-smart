@@ -8,4 +8,5 @@ import java.util.List;
 public interface SentimentRepository extends JpaRepository<Sentiment, Long> {
 
     List<Sentiment> findByTagEqualsAndTimestampBetween(int tag, Long startTime, Long endTime);
+    Sentiment findTopByTagOrderByTimestampDesc(int tag);
 }
