@@ -10,6 +10,7 @@ import com.nutanix.hack.seeksmart.pojo.response.PostResponse;
 import com.nutanix.hack.seeksmart.repository.HotRepository;
 import com.nutanix.hack.seeksmart.repository.PostRepository;
 import com.nutanix.hack.seeksmart.repository.TrendingRepository;
+import com.nutanix.hack.seeksmart.utils.SentimentAnalyzer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class controller {
     private final HotRepository hotRepository;
     private final PostRepository postRepository;
     private final TrendingRepository trendingRepository;
+    private final SentimentAnalyzer sentimentAnalyzer;
 
     @GetMapping(path = "/post")
     @ResponseStatus(HttpStatus.OK)
@@ -73,6 +75,7 @@ public class controller {
     public Long createPost(@Valid @RequestBody(required = true) CreatePostRequest createPostRequest) {
         Post post = Post.builder()
                 .rant(createPostRequest.getRant())
+                .sentimentIndex(sentimentAnalyzer.findSentiment(createPostRequest.getRant()))
                 .createdBy(createPostRequest.getUserName())
                 .isDeleted(false)
                 .build();
