@@ -22,8 +22,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestController
@@ -78,13 +81,18 @@ public class controller {
     @PostMapping(path = "/post")
     @ResponseStatus(HttpStatus.CREATED)
     public Long createPost(@Valid @RequestBody(required = true) CreatePostRequest createPostRequest) {
-        List<String> hashTags =
+        Pattern hashTagPattern = Pattern.compile("#(\\S+)");
+        Matcher mat = hashTagPattern.matcher(createPostRequest.getRant());
+        List<String> hashTags = new ArrayList<>();
+        while (mat.find()) {
+            hashTags.add(mat.group(1));
+        }
         Post post = Post.builder()
                 .rant(createPostRequest.getRant())
                 .sentimentIndex(sentimentAnalyzer.findSentiment(createPostRequest.getRant()))
                 .createdBy(createPostRequest.getUserName())
                 .isDeleted(false)
-                .hashTags()
+                .hashTags(hashTags)
                 .build();
         post = postRepository.save(post);
         return post.getId();
