@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface HotRepository extends JpaRepository<Hot, Long> {
-
-    List<Hot> findTop50ByRankAfterAndRankBeforeOrderByRank(Integer keySet, int minValue);
     
     Hot findHotByPostId(Long postId);
+    List<Hot> findTop50ByRankAfterAndRankBeforeOrderByRankAsc(Double keySet, Double minValue);
+
 }

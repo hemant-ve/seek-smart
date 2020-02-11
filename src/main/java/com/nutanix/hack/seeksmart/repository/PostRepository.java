@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findTop50ByCreatedAtAfterAndCreatedAtBeforeAAndIsDeletedFalseOrderByCreatedAtDesc(Long createdByAfter, Long createdByBefore);
+    List<Post> findTop50ByCreatedAtAfterAndCreatedAtBeforeAndIsDeletedFalseOrderByCreatedAtDesc(Long createdByAfter, Long createdByBefore);
 }

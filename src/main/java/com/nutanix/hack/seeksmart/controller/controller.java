@@ -41,7 +41,7 @@ public class controller {
     @GetMapping(path = "/post")
     @ResponseStatus(HttpStatus.OK)
     public PostResponse getAllPost(@RequestParam(name = "keyset", defaultValue = "0") Long keySet) {
-        List<Post> posts = postRepository.findTop50ByCreatedAtAfterAndCreatedAtBeforeAAndIsDeletedFalseOrderByCreatedAtDesc(keySet, Instant.now().toEpochMilli());
+        List<Post> posts = postRepository.findTop50ByCreatedAtAfterAndCreatedAtBeforeAndIsDeletedFalseOrderByCreatedAtDesc(keySet, Instant.now().toEpochMilli());
         List<PostItem> postItems = posts.stream()
                 .map(i -> new PostItem(i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
                 .collect(Collectors.toList());
@@ -50,11 +50,11 @@ public class controller {
 
     @GetMapping(path = "/post/trending/")
     @ResponseStatus(HttpStatus.OK)
-    public PostResponse getAllTrendingPost(@RequestParam(name = "keyset", defaultValue = "0") Integer keySet) {
+    public PostResponse getAllTrendingPost(@RequestParam(name = "keyset", defaultValue = "0.0") Double keySet) {
         if(keySet == 0) {
-            keySet = Integer.MAX_VALUE;
+            keySet = Double.MAX_VALUE;
         }
-        List<Trending> trendingList = trendingRepository.findTop50ByRankAfterAndRankBeforeOrderByRank(keySet, Integer.MIN_VALUE);
+        List<Trending> trendingList = trendingRepository.findTop50ByRankAfterAndRankBeforeOrderByRankAsc(keySet, Double.MIN_VALUE);
         List<Long> postIds = trendingList.stream().map(Trending::getPostId).collect(Collectors.toList());
         List<Post> posts = postRepository.findAllById(postIds);
         List<PostItem> postItems = posts.stream()
@@ -65,11 +65,11 @@ public class controller {
 
     @GetMapping(path = "/post/hot/")
     @ResponseStatus(HttpStatus.OK)
-    public PostResponse getAllhotPost(@RequestParam(name = "keyset", defaultValue = "0") Integer keySet) {
-        if(keySet == 0) {
-            keySet = Integer.MAX_VALUE;
+    public PostResponse getAllhotPost(@RequestParam(name = "keyset", defaultValue = "0.0") Double keySet) {
+        if(keySet == 0.0) {
+            keySet = Double.MAX_VALUE;
         }
-        List<Hot> trendingList = hotRepository.findTop50ByRankAfterAndRankBeforeOrderByRank(keySet, Integer.MIN_VALUE);
+        List<Hot> trendingList = hotRepository.findTop50ByRankAfterAndRankBeforeOrderByRankAsc(keySet, Double.MIN_VALUE);
         List<Long> postIds = trendingList.stream().map(Hot::getPostId).collect(Collectors.toList());
         List<Post> posts = postRepository.findAllById(postIds);
         List<PostItem> postItems = posts.stream()
