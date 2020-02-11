@@ -3,6 +3,7 @@ package com.nutanix.hack.seeksmart.controller;
 import com.nutanix.hack.seeksmart.model.Hot;
 import com.nutanix.hack.seeksmart.model.Post;
 import com.nutanix.hack.seeksmart.model.Trending;
+import com.nutanix.hack.seeksmart.pojo.request.CreatePostRequest;
 import com.nutanix.hack.seeksmart.pojo.response.PostItem;
 import com.nutanix.hack.seeksmart.pojo.response.PostResponse;
 import com.nutanix.hack.seeksmart.repository.HotRepository;
@@ -13,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,7 +30,7 @@ public class controller {
     @GetMapping(path = "/post")
     @ResponseStatus(HttpStatus.OK)
     public PostResponse getAllPost(@RequestParam(name = "keyset", defaultValue = "0") Long keySet) {
-        List<Post> posts = postRepository.findTop50ByCreatedAtAfterAndCreatedAtBeforeOrderByCreatedAtDesc(keySet, Instant.now().toEpochMilli());
+        List<Post> posts = postRepository.findTop50ByCreatedAtAfterAndCreatedAtBeforeAAndIsDeletedFalseOrderByCreatedAtDesc(keySet, Instant.now().toEpochMilli());
         List<PostItem> postItems = posts.stream()
                 .map(i -> new PostItem(i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
                 .collect(Collectors.toList());
@@ -65,5 +68,28 @@ public class controller {
     }
 
     @PostMapping(path = "/post")
-    @ResponseStatus(HttpS)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long createPost(@Valid @RequestBody(required = true) CreatePostRequest createPostRequest) {
+        Post post = Post.builder()
+                .rant(createPostRequest.getRant())
+                .createdBy(createPostRequest.getUserName())
+                .isDeleted(false)
+                .build();
+        post = postRepository.save(post);
+        return post.getId();
+    }
+
+    @DeleteMapping(path = "/post/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Long deletePost(@PathVariable(name = "id") Long postId) {
+        Optional<Post> post = postRepository.findById(postId);
+        if(post.isPresent()) {
+            Post postObj = post.get();
+            postObj.setIsDeleted(true);
+            postRepository.save(postObj);
+            return postObj.getId();
+        }
+        return 0L;
+    }
+
 }
