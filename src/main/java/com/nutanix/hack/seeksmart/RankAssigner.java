@@ -17,6 +17,6 @@ public class RankAssigner {
 
     @Scheduled(fixedDelay = 300000L)
     public void rankPosts() {
-        
+
     }
 }

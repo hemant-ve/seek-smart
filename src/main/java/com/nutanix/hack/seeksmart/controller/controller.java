@@ -4,6 +4,7 @@ import com.nutanix.hack.seeksmart.model.Hot;
 import com.nutanix.hack.seeksmart.model.Post;
 import com.nutanix.hack.seeksmart.model.Trending;
 import com.nutanix.hack.seeksmart.pojo.request.CreatePostRequest;
+import com.nutanix.hack.seeksmart.pojo.request.PostBulkRequest;
 import com.nutanix.hack.seeksmart.pojo.response.PostItem;
 import com.nutanix.hack.seeksmart.pojo.response.PostResponse;
 import com.nutanix.hack.seeksmart.repository.HotRepository;
@@ -90,6 +91,29 @@ public class controller {
             return postObj.getId();
         }
         return 0L;
+    }
+
+    @PutMapping(path = "/post/{id}/concur")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Long concurPost(@PathVariable(name = "id") Long postId) {
+        Optional<Post> post = postRepository.findById(postId);
+        if(post.isPresent()) {
+            Post postObj = post.get();
+            postObj.setNoOfAcks(postObj.getNoOfAcks()+1);
+            postRepository.save(postObj);
+            return postObj.getId();
+        }
+        return 0L;
+    }
+
+    @PutMapping(path = "/post/{id}/ack")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void ackPost(@Valid @RequestBody PostBulkRequest postBulkRequest) {
+        List<Post> posts = postRepository.findAllById(postBulkRequest.getPostIds());
+        for (Post post : posts) {
+            post.setNoOfAcks(post.getNoOfAcks()+1);
+            postRepository.save(post);
+        }
     }
 
 }
