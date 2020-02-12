@@ -27,7 +27,7 @@ public class SentimentCron {
     public void sentimentTimeseriesCron() {
         Long currentTimestamp = Instant.now().toEpochMilli();
         Optional<Sentiment> lastSentimentObject = sentimentRepository.findTopByTagOrderByTimestampDesc(0);
-        Optional<ActivityLog> firstActivityLogObject = activityLogRepository.findTopOrderByTimeStampAsc();
+        Optional<ActivityLog> firstActivityLogObject = activityLogRepository.findTopByOrderByTimeStampAsc();
         Long nextBatchTimestamp;
         if(lastSentimentObject.isPresent())
             nextBatchTimestamp = lastSentimentObject.get().getTimestamp() + TimeUnit.MINUTES.toMillis(5);
