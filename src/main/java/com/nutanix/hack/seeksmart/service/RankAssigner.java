@@ -21,7 +21,7 @@ public class RankAssigner {
     private final TrendingRepository trendingRepository;
     private final ActivityLogRepository activityLogRepository;
     
-    private static final Long millisIn5Minutes = 300000L;
+    private static final long millisIn5Minutes = 300000;
     private static final Long trendingTimeConstant = 2016L;
 
     @Scheduled(fixedDelay = millisIn5Minutes)
