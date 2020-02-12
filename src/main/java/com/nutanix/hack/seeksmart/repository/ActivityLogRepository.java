@@ -21,6 +21,6 @@ public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> 
      @Query("SELECT avg(p.sentimentIndex) FROM ActivityLog a, Post p WHERE a.postId = p.id AND a.isConcur = true AND a.timeStamp BETWEEN ?1 AND ?2")
      float findAvgConcurIndexBetweenTimestamp(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
      
-     @Query(value = "SELECT id , count(id) , sum(isConcur) FROM ActivityLog  where timeStamp between ?1 and ?2 order by postId",nativeQuery = true)
-     List<ActivityLogCustomObject> findActivitiesInTimeRange(Long from , Long to);
+     @Query("SELECT a.postId as postId , count(a.id) as ackCount , sum(CASE WHEN a.isConcur = TRUE THEN 1 ELSE 0 END) as concurCount FROM ActivityLog a  where a.timeStamp between ?1 and ?2 group by a.postId")
+     List<ActivityLogCustomObject> findActivitiesInTimeRange(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
 }
