@@ -124,7 +124,7 @@ public class controller {
         Optional<Post> post = postRepository.findById(postId);
         if(post.isPresent()) {
             Post postObj = post.get();
-            postObj.setNoOfAcks(postObj.getNoOfAcks()+1);
+            postObj.setNoOfConcurs(postObj.getNoOfConcurs()+1);
             postRepository.save(postObj);
             ActivityLog activityLog = ActivityLog.builder()
                     .postId(postObj.getId())
