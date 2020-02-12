@@ -3,6 +3,7 @@ package com.nutanix.hack.seeksmart.service;
 import com.nutanix.hack.seeksmart.model.ActivityLog;
 import com.nutanix.hack.seeksmart.model.Sentiment;
 import com.nutanix.hack.seeksmart.repository.ActivityLogRepository;
+import com.nutanix.hack.seeksmart.repository.PostRepository;
 import com.nutanix.hack.seeksmart.repository.SentimentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SentimentCron {
+    private final PostRepository postRepository;
     private final SentimentRepository sentimentRepository;
     private final ActivityLogRepository activityLogRepository;
     
@@ -44,7 +46,7 @@ public class SentimentCron {
     }
     
     private Sentiment getPeriodSentiment(Long nextBatchTimestamp, int tag) {
-        float postIndex = activityLogRepository.findAvgPostIndexBetweenTimestamp(nextBatchTimestamp - TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES), nextBatchTimestamp);
+        float postIndex = postRepository.findAvgPostIndexBetweenTimestamp(nextBatchTimestamp - TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES), nextBatchTimestamp);
         float concurIndex = activityLogRepository.findAvgConcurIndexBetweenTimestamp(nextBatchTimestamp - TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES), nextBatchTimestamp);
         return Sentiment.builder()
                 .timestamp(nextBatchTimestamp)
