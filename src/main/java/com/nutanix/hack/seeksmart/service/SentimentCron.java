@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -24,7 +25,11 @@ public class SentimentCron {
     @Scheduled(fixedRate = CRON_RATE_MINUTES*60*1000)
     public void sentimentTimeseriesCron() {
         Long currentTimestamp = Instant.now().toEpochMilli();
-        for (Long nextBatchTimestamp = sentimentRepository.findTopByTagOrderByTimestampDesc(0).getTimestamp() + TimeUnit.MINUTES.toMillis(5);
+        Optional<Sentiment> sentimentObject = sentimentRepository.findTopByTagOrderByTimestampDesc(0);
+        if(!sentimentObject.isPresent())
+            return;
+        
+        for (Long nextBatchTimestamp = sentimentObject.get().getTimestamp() + TimeUnit.MINUTES.toMillis(5);
              nextBatchTimestamp < currentTimestamp;
              nextBatchTimestamp = nextBatchTimestamp + TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES)) {
             Sentiment sentiment = getPeriodSentiment(nextBatchTimestamp, 0);
