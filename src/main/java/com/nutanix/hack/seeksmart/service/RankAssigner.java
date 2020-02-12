@@ -54,7 +54,13 @@ public class RankAssigner {
         
         for(ActivityLogCustomObject post : logMap.values()) {
             Hot hot = hotRepository.findHotByPostId(post.getPostId());
-            Double newCycleRank = (post.getConcurCount()/post.getAckCount())*1.0;
+            Double newCycleRank;
+            if(post.getConcurCount()==0)
+                newCycleRank = 0.0;
+            else if (post.getAckCount()==0)
+                newCycleRank = 1.0;
+            else
+                newCycleRank = (post.getConcurCount()/post.getAckCount())*1.0;
             if(hot == null) {
                 hot = Hot.builder()
                         .postId(post.getPostId())
@@ -73,9 +79,15 @@ public class RankAssigner {
     
         for(ActivityLogCustomObject post : logMap.values()) {
             Trending trending = trendingRepository.findTrendingByPostId(post.getPostId());
-            Double newCycleRank = null;
+            Double newCycleRank;
+            if(post.getConcurCount()==0)
+                newCycleRank = 0.0;
+            else if (post.getAckCount()==0)
+                newCycleRank = 1.0;
+            else
+                newCycleRank = (post.getConcurCount()/post.getAckCount())*1.0 + (1.0/trendingTimeConstant);
+    
             if(trending == null) {
-                newCycleRank = (post.getConcurCount()/post.getAckCount())*1.0 + (1/trendingTimeConstant);
                 trending = Trending.builder()
                         .postId(post.getPostId())
                         .rank(newCycleRank)
@@ -84,8 +96,7 @@ public class RankAssigner {
                 trendingRepository.save(trending);
             }
             else {
-                newCycleRank = (post.getConcurCount()/post.getAckCount())*1.0 +
-                        ((trending.getCycleCount()+1)/trendingTimeConstant);
+                newCycleRank += 1.0*trending.getCycleCount()/trendingTimeConstant;
                 Double newRank = ((trending.getRank() * trending.getCycleCount()) +
                         newCycleRank)/(trending.getCycleCount()+1);
                 trending.setCycleCount(trending.getCycleCount()+1);

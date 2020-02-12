@@ -34,7 +34,7 @@ public class SentimentCron {
         if(lastSentimentObject.isPresent())
             nextBatchTimestamp = lastSentimentObject.get().getTimestamp() + TimeUnit.MINUTES.toMillis(5);
         else if (firstActivityLogObject.isPresent()) {
-            nextBatchTimestamp = firstActivityLogObject.get().getTimeStamp();
+            nextBatchTimestamp = firstActivityLogObject.get().getTimeStamp() + TimeUnit.MINUTES.toMillis(5);
         } else {
             return;
         }
@@ -46,8 +46,14 @@ public class SentimentCron {
     }
     
     private Sentiment getPeriodSentiment(Long nextBatchTimestamp, int tag) {
-        float postIndex = postRepository.findAvgPostIndexBetweenTimestamp(nextBatchTimestamp - TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES), nextBatchTimestamp);
-        float concurIndex = activityLogRepository.findAvgConcurIndexBetweenTimestamp(nextBatchTimestamp - TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES), nextBatchTimestamp);
+        Float postIndex = postRepository.findAvgPostIndexBetweenTimestamp(nextBatchTimestamp - TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES), nextBatchTimestamp);
+        Float concurIndex = activityLogRepository.findAvgConcurIndexBetweenTimestamp(nextBatchTimestamp - TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES), nextBatchTimestamp);
+        if(postIndex==null) {
+            postIndex = 2F;
+        }
+        if(concurIndex==null) {
+            concurIndex = 2F;
+        }
         return Sentiment.builder()
                 .timestamp(nextBatchTimestamp)
                 .index((1-CONCUR_WEIGHTS)*postIndex + CONCUR_WEIGHTS*concurIndex)
