@@ -1,5 +1,6 @@
 package com.nutanix.hack.seeksmart.service;
 
+import com.nutanix.hack.seeksmart.model.ActivityLog;
 import com.nutanix.hack.seeksmart.model.Sentiment;
 import com.nutanix.hack.seeksmart.repository.ActivityLogRepository;
 import com.nutanix.hack.seeksmart.repository.SentimentRepository;
@@ -25,13 +26,18 @@ public class SentimentCron {
     @Scheduled(fixedRate = CRON_RATE_MINUTES*60*1000)
     public void sentimentTimeseriesCron() {
         Long currentTimestamp = Instant.now().toEpochMilli();
-        Optional<Sentiment> sentimentObject = sentimentRepository.findTopByTagOrderByTimestampDesc(0);
-        if(!sentimentObject.isPresent())
+        Optional<Sentiment> lastSentimentObject = sentimentRepository.findTopByTagOrderByTimestampDesc(0);
+        Optional<ActivityLog> firstActivityLogObject = activityLogRepository.findTopOrderByTimeStampAsc();
+        Long nextBatchTimestamp;
+        if(lastSentimentObject.isPresent())
+            nextBatchTimestamp = lastSentimentObject.get().getTimestamp() + TimeUnit.MINUTES.toMillis(5);
+        else if (firstActivityLogObject.isPresent()) {
+            nextBatchTimestamp = firstActivityLogObject.get().getTimeStamp();
+        } else {
             return;
+        }
         
-        for (Long nextBatchTimestamp = sentimentObject.get().getTimestamp() + TimeUnit.MINUTES.toMillis(5);
-             nextBatchTimestamp < currentTimestamp;
-             nextBatchTimestamp = nextBatchTimestamp + TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES)) {
+        for ( ; nextBatchTimestamp < currentTimestamp; nextBatchTimestamp = nextBatchTimestamp + TimeUnit.MINUTES.toMillis(BATCH_SIZE_MINUTES)) {
             Sentiment sentiment = getPeriodSentiment(nextBatchTimestamp, 0);
             sentimentRepository.save(sentiment);
         }

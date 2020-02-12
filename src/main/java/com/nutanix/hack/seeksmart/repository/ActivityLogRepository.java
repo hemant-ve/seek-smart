@@ -8,11 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> {
      
-     List<ActivityLog> findByTimeStampBetween(Long startTime, Long endTime);
+     Optional<ActivityLog> findTopOrderByTimeStampAsc();
      
      @Query("SELECT avg(p.sentimentIndex) FROM ActivityLog a, Post p WHERE a.postId = p.id AND a.isConcur = false AND a.timeStamp BETWEEN ?1 AND ?2")
      float findAvgPostIndexBetweenTimestamp(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
