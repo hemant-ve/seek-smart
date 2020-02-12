@@ -86,6 +86,8 @@ public class controller {
                 .rant(createPostRequest.getRant())
                 .sentimentIndex(sentimentAnalyzer.findSentiment(createPostRequest.getRant()))
                 .createdBy(createPostRequest.getUserName())
+                .noOfAcks(0)
+                .noOfConcurs(0)
                 .isDeleted(false)
                 .hashTags(hashTags)
                 .build();
