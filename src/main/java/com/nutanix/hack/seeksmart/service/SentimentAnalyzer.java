@@ -16,7 +16,7 @@ public class SentimentAnalyzer {
 
     public int findSentiment(String line) {
         Properties properties = new Properties();
-        properties.setProperty("annotators", "tokenize, ssplit, parse, index");
+        properties.setProperty("annotators", "tokenize,ssplit,pos,lemma,parse,sentiment");
         StanfordCoreNLP stanfordCoreNLP = new StanfordCoreNLP(properties);
         int sentimentIndex = 0;
         if (line != null && !line.isEmpty()) {
