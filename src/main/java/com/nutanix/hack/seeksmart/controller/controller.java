@@ -36,8 +36,11 @@ public class controller {
 
     @GetMapping(path = "/post")
     @ResponseStatus(HttpStatus.OK)
-    public PostResponse getAllPost(@RequestParam(name = "keyset", defaultValue = "0") Long keySet) {
-        List<Post> posts = postRepository.findTop50ByCreatedAtAfterAndCreatedAtBeforeAndIsDeletedFalseOrderByCreatedAtDesc(keySet, Instant.now().toEpochMilli());
+    public PostResponse getAllPost(@RequestParam(name = "keyset", defaultValue = "-1") Long keySet) {
+        if(keySet < 0) {
+            keySet = Long.MAX_VALUE;
+        }
+        List<Post> posts = postRepository.findTop50ByCreatedAtLessThanAndIsDeletedFalseOrderByCreatedAtDesc(keySet);
         List<PostItem> postItems = posts.stream()
                 .map(i -> new PostItem(i.getId(), i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
                 .collect(Collectors.toList());
