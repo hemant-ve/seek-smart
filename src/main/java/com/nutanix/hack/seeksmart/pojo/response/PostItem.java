@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostItem {
+    private Long id;
     private String rant;
     private Long createdAt;
     private Integer noOfAcks;
