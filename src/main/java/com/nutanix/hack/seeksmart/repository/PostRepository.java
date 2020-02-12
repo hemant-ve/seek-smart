@@ -13,5 +13,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT avg(p.sentimentIndex) FROM Post p WHERE p.isDeleted = false AND p.createdAt BETWEEN ?1 AND ?2")
     Float findAvgPostIndexBetweenTimestamp(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
     
-    List<Post> findTop50ByCreatedAtAfterAndCreatedAtBeforeAndIsDeletedFalseOrderByCreatedAtDesc(Long createdByAfter, Long createdByBefore);
+    List<Post> findTop50ByCreatedAtLessThanAndIsDeletedFalseOrderByCreatedAtDesc(Long createdByAfter);
 }
