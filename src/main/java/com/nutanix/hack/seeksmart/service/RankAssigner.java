@@ -1,5 +1,6 @@
 package com.nutanix.hack.seeksmart.service;
 
+import com.nutanix.hack.seeksmart.model.ActivityLog;
 import com.nutanix.hack.seeksmart.model.Hot;
 import com.nutanix.hack.seeksmart.model.Trending;
 import com.nutanix.hack.seeksmart.pojo.response.ActivityLogCustomObject;
@@ -11,7 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import java.util.List;
+
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -30,11 +32,27 @@ public class RankAssigner {
         Long currentSeconds = System.currentTimeMillis();
         Long endTime = currentSeconds - (currentSeconds % millisIn5Minutes);
         Long startTime = endTime - millisIn5Minutes;
-    
-        List<ActivityLogCustomObject> activityLogs = activityLogRepository.
-                findActivitiesInTimeRange(startTime,endTime);
         
-        for(ActivityLogCustomObject post : activityLogs) {
+        List<ActivityLog> postActivityLog = activityLogRepository.findByIsConcurFalseAndTimeStampBetween(startTime, endTime);
+        List<ActivityLog> concurActivityLog = activityLogRepository.findByIsConcurTrueAndTimeStampBetween(startTime, endTime);
+    
+        
+        Map<Long, ActivityLogCustomObject> logMap = new HashMap<>();
+        
+        for(ActivityLog log : postActivityLog) {
+            Long postId = log.getPostId();
+            if(!logMap.containsKey(postId))
+                logMap.put(postId, new ActivityLogCustomObject(postId, 0, 0));
+            logMap.get(postId).setAckCount(logMap.get(postId).getAckCount() + 1);
+        }
+        for(ActivityLog log : concurActivityLog) {
+            Long postId = log.getPostId();
+            if (!logMap.containsKey(postId))
+                logMap.put(postId, new ActivityLogCustomObject(postId, 0, 0));
+            logMap.get(postId).setConcurCount(logMap.get(postId).getConcurCount() + 1);
+        }
+        
+        for(ActivityLogCustomObject post : logMap.values()) {
             Hot hot = hotRepository.findHotByPostId(post.getPostId());
             Double newCycleRank = (post.getConcurCount()/post.getAckCount())*1.0;
             if(hot == null) {
@@ -53,7 +71,7 @@ public class RankAssigner {
             }
         }
     
-        for(ActivityLogCustomObject post : activityLogs) {
+        for(ActivityLogCustomObject post : logMap.values()) {
             Trending trending = trendingRepository.findTrendingByPostId(post.getPostId());
             Double newCycleRank = null;
             if(trending == null) {
