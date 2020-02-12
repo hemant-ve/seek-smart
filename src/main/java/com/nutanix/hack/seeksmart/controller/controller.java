@@ -43,7 +43,7 @@ public class controller {
         return new PostResponse(postItems, postItems.get(postItems.size() - 1).getCreatedAt());
     }
 
-    @GetMapping(path = "/post/trending/")
+    @GetMapping(path = "/post/trending")
     @ResponseStatus(HttpStatus.OK)
     public PostResponse getAllTrendingPost(@RequestParam(name = "keyset", defaultValue = "0.0") Double keySet) {
         if(keySet == 0) {
@@ -58,7 +58,7 @@ public class controller {
         return new PostResponse(postItems, postItems.get(postItems.size() - 1).getCreatedAt());
     }
 
-    @GetMapping(path = "/post/hot/")
+    @GetMapping(path = "/post/hot")
     @ResponseStatus(HttpStatus.OK)
     public PostResponse getAllhotPost(@RequestParam(name = "keyset", defaultValue = "0.0") Double keySet) {
         if(keySet == 0.0) {
@@ -143,9 +143,10 @@ public class controller {
     
     @GetMapping(path = "/sentiment")
     @ResponseStatus(HttpStatus.OK)
-    public List<SentimentResponse> getSentimentTimeseries(@RequestParam(name = "timeRange") TimeRange timeRange) {
+    public List<SentimentResponse> getSentimentTimeseries(@RequestParam(name = "start") Long startTime,
+                                                          @RequestParam(name = "end") Long endTime) {
         List<Sentiment> sentiments = sentimentRepository.findByTagEqualsAndTimestampBetween(0,
-                timeRange.getStartTime(), timeRange.getEndTime());
+                startTime, endTime);
         return sentiments.stream().map(sentiment -> new SentimentResponse(sentiment.getTimestamp(), sentiment.getIndex()))
                 .collect(Collectors.toList());
     }
