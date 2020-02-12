@@ -15,9 +15,6 @@ public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> 
      
      Optional<ActivityLog> findTopByOrderByTimeStampAsc();
      
-     @Query("SELECT avg(p.sentimentIndex) FROM ActivityLog a, Post p WHERE a.postId = p.id AND a.isConcur = false AND a.timeStamp BETWEEN ?1 AND ?2")
-     float findAvgPostIndexBetweenTimestamp(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
-     
      @Query("SELECT avg(p.sentimentIndex) FROM ActivityLog a, Post p WHERE a.postId = p.id AND a.isConcur = true AND a.timeStamp BETWEEN ?1 AND ?2")
      float findAvgConcurIndexBetweenTimestamp(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
      
