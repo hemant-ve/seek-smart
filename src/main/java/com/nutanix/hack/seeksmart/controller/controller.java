@@ -39,7 +39,7 @@ public class controller {
     public PostResponse getAllPost(@RequestParam(name = "keyset", defaultValue = "0") Long keySet) {
         List<Post> posts = postRepository.findTop50ByCreatedAtAfterAndCreatedAtBeforeAndIsDeletedFalseOrderByCreatedAtDesc(keySet, Instant.now().toEpochMilli());
         List<PostItem> postItems = posts.stream()
-                .map(i -> new PostItem(i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
+                .map(i -> new PostItem(i.getId(), i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
                 .collect(Collectors.toList());
         if(CollectionUtils.isEmpty(postItems)) {
             return new PostResponse(postItems, 0L);
@@ -57,7 +57,7 @@ public class controller {
         List<Long> postIds = trendingList.stream().map(Trending::getPostId).collect(Collectors.toList());
         List<Post> posts = postRepository.findAllById(postIds);
         List<PostItem> postItems = posts.stream()
-                .map(i -> new PostItem(i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
+                .map(i -> new PostItem(i.getId(), i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
                 .collect(Collectors.toList());
         if(CollectionUtils.isEmpty(postItems)) {
             return new PostResponse(postItems, 0L);
@@ -75,7 +75,7 @@ public class controller {
         List<Long> postIds = trendingList.stream().map(Hot::getPostId).collect(Collectors.toList());
         List<Post> posts = postRepository.findAllById(postIds);
         List<PostItem> postItems = posts.stream()
-                .map(i -> new PostItem(i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
+                .map(i -> new PostItem(i.getId(), i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
                 .collect(Collectors.toList());
         if(CollectionUtils.isEmpty(postItems)) {
             return new PostResponse(postItems, 0L);
