@@ -10,6 +10,7 @@ import com.nutanix.hack.seeksmart.pojo.response.SentimentResponse;
 import com.nutanix.hack.seeksmart.repository.*;
 import com.nutanix.hack.seeksmart.service.SentimentAnalyzer;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,9 @@ public class controller {
         List<PostItem> postItems = posts.stream()
                 .map(i -> new PostItem(i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
                 .collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(postItems)) {
+            return new PostResponse(postItems, 0L);
+        }
         return new PostResponse(postItems, postItems.get(postItems.size() - 1).getCreatedAt());
     }
 
@@ -55,6 +59,9 @@ public class controller {
         List<PostItem> postItems = posts.stream()
                 .map(i -> new PostItem(i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
                 .collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(postItems)) {
+            return new PostResponse(postItems, 0L);
+        }
         return new PostResponse(postItems, postItems.get(postItems.size() - 1).getCreatedAt());
     }
 
@@ -70,6 +77,9 @@ public class controller {
         List<PostItem> postItems = posts.stream()
                 .map(i -> new PostItem(i.getRant(), i.getCreatedAt(), i.getNoOfAcks(), i.getNoOfConcurs(), i.getCreatedBy()))
                 .collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(postItems)) {
+            return new PostResponse(postItems, 0L);
+        }
         return new PostResponse(postItems, postItems.get(postItems.size() - 1).getCreatedAt());
     }
 
