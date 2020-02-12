@@ -1,19 +1,13 @@
 package com.nutanix.hack.seeksmart.controller;
 
-import com.nutanix.hack.seeksmart.model.Hot;
-import com.nutanix.hack.seeksmart.model.Post;
-import com.nutanix.hack.seeksmart.model.Sentiment;
-import com.nutanix.hack.seeksmart.model.Trending;
+import com.nutanix.hack.seeksmart.model.*;
 import com.nutanix.hack.seeksmart.pojo.request.CreatePostRequest;
 import com.nutanix.hack.seeksmart.pojo.request.PostBulkRequest;
 import com.nutanix.hack.seeksmart.pojo.request.TimeRange;
 import com.nutanix.hack.seeksmart.pojo.response.PostItem;
 import com.nutanix.hack.seeksmart.pojo.response.PostResponse;
 import com.nutanix.hack.seeksmart.pojo.response.SentimentResponse;
-import com.nutanix.hack.seeksmart.repository.HotRepository;
-import com.nutanix.hack.seeksmart.repository.PostRepository;
-import com.nutanix.hack.seeksmart.repository.SentimentRepository;
-import com.nutanix.hack.seeksmart.repository.TrendingRepository;
+import com.nutanix.hack.seeksmart.repository.*;
 import com.nutanix.hack.seeksmart.service.SentimentAnalyzer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +31,7 @@ public class controller {
     private final TrendingRepository trendingRepository;
     private final SentimentRepository sentimentRepository;
     private final SentimentAnalyzer sentimentAnalyzer;
+    private final ActivityLogRepository activityLogRepository;
 
     @GetMapping(path = "/post")
     @ResponseStatus(HttpStatus.OK)
@@ -119,6 +114,11 @@ public class controller {
             Post postObj = post.get();
             postObj.setNoOfAcks(postObj.getNoOfAcks()+1);
             postRepository.save(postObj);
+            ActivityLog activityLog = ActivityLog.builder()
+                    .postId(postObj.getId())
+                    .isConcur(true)
+                    .build();
+            activityLogRepository.save(activityLog);
             return postObj.getId();
         }
         return 0L;
@@ -131,6 +131,11 @@ public class controller {
         for (Post post : posts) {
             post.setNoOfAcks(post.getNoOfAcks()+1);
             postRepository.save(post);
+            ActivityLog activityLog = ActivityLog.builder()
+                    .postId(post.getId())
+                    .isConcur(false)
+                    .build();
+            activityLogRepository.save(activityLog);
         }
     }
     
