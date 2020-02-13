@@ -85,7 +85,7 @@ public class RankAssigner {
             else if (post.getAckCount()==0)
                 newCycleRank = 1.0;
             else
-                newCycleRank = (post.getConcurCount()/post.getAckCount())*1.0 + (1.0/trendingTimeConstant);
+                newCycleRank = (post.getConcurCount()/post.getAckCount())*1.0 - (1.0/trendingTimeConstant);
     
             if(trending == null) {
                 trending = Trending.builder()
@@ -96,11 +96,9 @@ public class RankAssigner {
                 trendingRepository.save(trending);
             }
             else {
-                newCycleRank += 1.0*trending.getCycleCount()/trendingTimeConstant;
-                Double newRank = ((trending.getRank() * trending.getCycleCount()) +
-                        newCycleRank)/(trending.getCycleCount()+1);
+                newCycleRank -= (trending.getCycleCount()+1.0)/trendingTimeConstant;
                 trending.setCycleCount(trending.getCycleCount()+1);
-                trending.setRank(newRank);
+                trending.setRank(newCycleRank);
                 trendingRepository.save(trending);
             }
         }
