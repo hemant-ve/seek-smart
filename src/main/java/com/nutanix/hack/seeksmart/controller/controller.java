@@ -4,6 +4,7 @@ import com.nutanix.hack.seeksmart.model.*;
 import com.nutanix.hack.seeksmart.pojo.request.CreatePostRequest;
 import com.nutanix.hack.seeksmart.pojo.request.PostBulkRequest;
 import com.nutanix.hack.seeksmart.pojo.request.TimeRange;
+import com.nutanix.hack.seeksmart.pojo.response.Ponto;
 import com.nutanix.hack.seeksmart.pojo.response.PostItem;
 import com.nutanix.hack.seeksmart.pojo.response.PostResponse;
 import com.nutanix.hack.seeksmart.pojo.response.SentimentResponse;
@@ -13,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.time.Instant;
@@ -53,7 +56,7 @@ public class controller {
     @GetMapping(path = "/post/trending")
     @ResponseStatus(HttpStatus.OK)
     public PostResponse getAllTrendingPost(@RequestParam(name = "keyset", defaultValue = "0.0") Double keySet) {
-        if(keySet == 0) {
+        if(keySet == 0 || keySet == 0.0) {
             keySet = Double.MAX_VALUE;
         }
         List<Trending> trendingList = trendingRepository.findTop50ByRankAfterAndRankBeforeOrderByRankAsc(keySet, Double.MIN_VALUE);
@@ -71,7 +74,7 @@ public class controller {
     @GetMapping(path = "/post/hot")
     @ResponseStatus(HttpStatus.OK)
     public PostResponse getAllhotPost(@RequestParam(name = "keyset", defaultValue = "0.0") Double keySet) {
-        if(keySet == 0.0) {
+        if(keySet == 0.0 || keySet == 0) {
             keySet = Double.MAX_VALUE;
         }
         List<Hot> trendingList = hotRepository.findTop50ByRankAfterAndRankBeforeOrderByRankAsc(keySet, Double.MIN_VALUE);
